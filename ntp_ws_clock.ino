@@ -109,7 +109,7 @@ void setup() {
   // NTP.ignorePing(true);                // не учитывать пинг до сервера
   // NTP.updateNow();                     // обновить прямо сейчас
 
-  LEDS.addLeds<LED_TYPE, LED_DT, COLOR_ORDER>(leds, NUM_LEDS);  // Use this for WS2812
+  FastLED.addLeds<LED_TYPE, LED_DT, COLOR_ORDER>(leds, NUM_LEDS);  // Use this for WS2812
 
   FastLED.setBrightness(curr_brightness);
 }
@@ -127,6 +127,10 @@ void loop() {
     curr_data[3] = dt.minute % 10;
     curr_data[4] = dt.second / 10;
     curr_data[5] = dt.second % 10;
+
+    if (WiFi.status() != WL_CONNECTED) {
+      WiFi.reconnect();
+    }
   }
 
   // изменился онлайн-статус
