@@ -3,6 +3,10 @@
 
 #include "FastLED.h"
 
+// unciomment it if you will do enterprise authorisation
+// #include "esp_wifi.h"
+// #include "esp_wpa2.h"
+
 #define use_seconds true
 #define left_input true
 
@@ -76,6 +80,8 @@ byte prev_data[7] = { 1, 2, 3, 4, 5, 6, 7 };
 
 int lastWIFIStatus;
 
+unsigned long last_connect_attempt;
+
 void setup() {
   Serial.begin(115200);
 
@@ -92,6 +98,8 @@ void setup() {
   }
 
   Serial.println("Connected");
+
+  last_connect_attempt = millis();
 
   // обработчик ошибок
   NTP.onError([]() {
@@ -129,7 +137,12 @@ void loop() {
     curr_data[5] = dt.second % 10;
 
     if (WiFi.status() != WL_CONNECTED) {
-      WiFi.reconnect();
+      Serial.println("WiFi not connected");
+      if ((millis() - last_connect_attempt) > 30000) {
+        Serial.println("reconnect");
+        WiFi.reconnect();
+        last_connect_attempt = millis();
+      }
     }
   }
 
